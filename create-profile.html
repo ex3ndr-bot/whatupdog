@@ -9,10 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-page="profile">
   <div class="site-shell">
-    <header class="topbar">
-      <a class="brand" href="index.html">What Up Dog</a>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <header class="topbar glass-card page-enter">
+      <a class="brand" href="index.html"><span class="brand-mark">🐶</span><span>What Up Dog</span></a>
       <nav class="nav">
         <a class="is-active" href="create-profile.html">Create Profile</a>
         <a href="matches.html">Matches</a>
@@ -20,18 +22,33 @@
       </nav>
     </header>
 
-    <main class="page-narrow">
+    <main class="page-narrow page-enter">
       <section class="page-header fade-up">
         <span class="eyebrow">Founder intake</span>
         <h1>Create your local founder profile</h1>
-        <p>Everything stays in `localStorage`. No account, no backend, no tracking.</p>
+        <p>Everything stays in localStorage. No account, no backend, no tracking — just a sharper static demo.</p>
       </section>
 
       <form class="glass-card form-panel fade-up" data-profile-form>
-        <div class="form-row">
+        <div class="form-row form-grid-2">
           <label class="field">
             <span>Name</span>
             <input type="text" name="name" placeholder="Alex Morgan" required>
+          </label>
+          <label class="field">
+            <span>Headline</span>
+            <input type="text" name="title" placeholder="AI infrastructure engineer turned founder" required>
+          </label>
+        </div>
+
+        <div class="form-row form-grid-2">
+          <label class="field">
+            <span>Location</span>
+            <input type="text" name="location" placeholder="San Francisco, CA" required>
+          </label>
+          <label class="field">
+            <span>Avatar emoji</span>
+            <input type="text" name="avatar" placeholder="🚀" maxlength="2" required>
           </label>
         </div>
 
@@ -40,30 +57,61 @@
           <div class="chip-grid" data-skill-grid></div>
         </div>
 
-        <div class="form-row">
+        <div class="form-row form-grid-2">
           <label class="field">
             <span>Interests</span>
-            <input type="text" name="interests" placeholder="AI Infrastructure, Fintech, Future of Work" required>
+            <input type="text" name="interests" placeholder="AI Infrastructure, Fintech, Developer Tools" required>
             <small>Comma-separated startup spaces you want to build in.</small>
+          </label>
+          <label class="field">
+            <span>Working style</span>
+            <input type="text" name="personality" placeholder="Fast shipping, direct feedback, customer obsessed" required>
+            <small>Comma-separated traits that describe how you operate.</small>
           </label>
         </div>
 
-        <div class="form-row">
-          <span class="field-label">Primary role</span>
-          <div class="radio-grid">
-            <label class="radio-card">
-              <input type="radio" name="role" value="technical" checked>
-              <span>Technical</span>
-            </label>
-            <label class="radio-card">
-              <input type="radio" name="role" value="business">
-              <span>Business</span>
-            </label>
-            <label class="radio-card">
-              <input type="radio" name="role" value="hybrid">
-              <span>Hybrid</span>
-            </label>
+        <div class="form-row form-grid-2">
+          <div>
+            <span class="field-label">Primary role</span>
+            <div class="radio-grid">
+              <label class="radio-card">
+                <input type="radio" name="role" value="technical" checked>
+                <span>Technical</span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="role" value="business">
+                <span>Business</span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="role" value="hybrid">
+                <span>Hybrid</span>
+              </label>
+            </div>
           </div>
+          <label class="field">
+            <span>Startup stage</span>
+            <select name="stage">
+              <option value="idea">Idea</option>
+              <option value="mvp" selected>MVP</option>
+              <option value="traction">Traction</option>
+              <option value="growth">Growth</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-row form-grid-2">
+          <label class="field">
+            <span>Weekly availability</span>
+            <select name="availability">
+              <option value="nights">Nights & weekends</option>
+              <option value="part-time">Part-time</option>
+              <option value="full-time" selected>Full-time</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Timezone preference</span>
+            <input type="text" name="timezone" placeholder="Pacific Time" required>
+          </label>
         </div>
 
         <div class="form-row">

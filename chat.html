@@ -9,10 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-page="chat">
   <div class="site-shell">
-    <header class="topbar">
-      <a class="brand" href="index.html">What Up Dog</a>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <header class="topbar glass-card page-enter">
+      <a class="brand" href="index.html"><span class="brand-mark">🐶</span><span>What Up Dog</span></a>
       <nav class="nav">
         <a href="create-profile.html">Create Profile</a>
         <a href="matches.html">Matches</a>
@@ -20,26 +22,33 @@
       </nav>
     </header>
 
-    <main class="page-narrow">
+    <main class="page-narrow page-enter">
       <section class="page-header fade-up">
         <span class="eyebrow">Founder intro chat</span>
         <h1>Mock conversation</h1>
-        <p>Open from a match card or use `chat.html?id=maya-chen` style links.</p>
+        <p>Open from a match card or use chat.html?id=maya-chen style links. Replies simulate vibe, stage, and market-aware intros.</p>
       </section>
 
       <section class="chat-shell glass-card fade-up" data-chat-shell>
         <div class="chat-top">
-          <div>
-            <h2 data-chat-title>Founder Match</h2>
-            <p data-chat-subtitle>Loading conversation...</p>
+          <div class="chat-header-row">
+            <div class="avatar avatar-lg" data-chat-avatar>🧠</div>
+            <div>
+              <h2 data-chat-title>Founder Match</h2>
+              <p data-chat-subtitle>Loading conversation...</p>
+            </div>
           </div>
           <a class="button button-secondary" href="matches.html">Back to matches</a>
         </div>
 
         <div class="chat-messages" data-chat-messages></div>
+        <div class="typing-indicator hidden" data-typing-indicator>
+          <span></span><span></span><span></span>
+          <em data-typing-label>Typing…</em>
+        </div>
 
         <form class="chat-form" data-chat-form>
-          <input type="text" name="message" placeholder="Ask about thesis, pace, market, or how they like to work..." autocomplete="off" required>
+          <input type="text" name="message" placeholder="Ask about market, speed, fundraising, customer calls, product taste..." autocomplete="off" required>
           <button class="button" type="submit">Send</button>
         </form>
       </section>

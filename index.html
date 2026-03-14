@@ -10,10 +10,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-page="home">
   <div class="site-shell">
-    <header class="topbar">
-      <a class="brand" href="index.html">What Up Dog</a>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <header class="topbar glass-card page-enter">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">🐶</span>
+        <span>What Up Dog</span>
+      </a>
       <nav class="nav">
         <a href="create-profile.html">Create Profile</a>
         <a href="matches.html">Matches</a>
@@ -21,81 +26,115 @@
       </nav>
     </header>
 
-    <main>
-      <section class="hero">
+    <main class="page-enter">
+      <section class="hero hero-grid">
         <div class="hero-copy fade-up">
           <span class="eyebrow">AI-powered founder chemistry</span>
-          <h1>Meet the co-founder who fills your blind spots.</h1>
-          <p class="hero-text">What Up Dog pairs ambitious builders with operators, product minds, and technical founders using profile signals, startup intent, and complementary execution styles.</p>
+          <h1>Find the co-founder who actually balances you out.</h1>
+          <p class="hero-text">A polished static demo for co-founder matching: smarter compatibility scoring, realistic profiles, and warm intro chat flows that feel surprisingly alive.</p>
           <div class="hero-actions">
             <a class="button" href="create-profile.html">Create your profile</a>
-            <a class="button button-secondary" href="matches.html">Browse matches</a>
+            <a class="button button-secondary" href="matches.html">Explore matches</a>
           </div>
           <div class="hero-metrics">
             <div class="metric glass-card">
               <strong data-profile-count>0</strong>
-              <span>demo founder signals analyzed</span>
+              <span>founder signals indexed</span>
             </div>
             <div class="metric glass-card">
-              <strong>94%</strong>
-              <span>match confidence on top pairs</span>
+              <strong>96%</strong>
+              <span>top-pair confidence</span>
+            </div>
+            <div class="metric glass-card">
+              <strong>&lt; 2 min</strong>
+              <span>from profile to intro chat</span>
             </div>
           </div>
         </div>
 
         <div class="hero-panel glass-card fade-up">
-          <div class="hero-orb"></div>
-          <div class="stack-card">
-            <span class="eyebrow">Live match sample</span>
-            <h2>Maya Chen + Jordan Banks</h2>
-            <p>Technical AI builder meets repeat GTM operator. Shared focus in B2B SaaS, strong skill complement, high execution probability.</p>
-            <div class="score-ring">
-              <span>96%</span>
+          <div class="hero-stack">
+            <div class="stack-card stack-primary">
+              <span class="eyebrow">Live pairing preview</span>
+              <div class="pair-row">
+                <div class="avatar avatar-lg">🧠</div>
+                <div class="pair-plus">+</div>
+                <div class="avatar avatar-lg accent">📈</div>
+              </div>
+              <h2>Maya Chen + Jordan Banks</h2>
+              <p>Technical AI systems founder paired with a repeat GTM operator. Strong complement on product velocity, enterprise sales, and fundraising readiness.</p>
+            </div>
+            <div class="mini-feed">
+              <div class="mini-item">
+                <span>Role complement</span>
+                <strong>Builder + Seller</strong>
+              </div>
+              <div class="mini-item">
+                <span>Shared market</span>
+                <strong>Applied AI + workflow tools</strong>
+              </div>
+              <div class="mini-item">
+                <span>Execution signal</span>
+                <strong>Fast MVP + customer obsession</strong>
+              </div>
             </div>
           </div>
-          <div class="mini-feed">
-            <div class="mini-item">
-              <span>Complementary roles</span>
-              <strong>Technical + Business</strong>
-            </div>
-            <div class="mini-item">
-              <span>Shared market</span>
-              <strong>AI Infrastructure</strong>
-            </div>
-            <div class="mini-item">
-              <span>Execution signal</span>
-              <strong>Fast MVP + GTM fit</strong>
-            </div>
+          <div class="score-ring hero-score-ring">
+            <span>96%</span>
           </div>
         </div>
       </section>
 
       <section class="section">
-        <div class="section-heading">
-          <span class="eyebrow">Why it works</span>
-          <h2>Beyond swipe apps and generic founder directories.</h2>
+        <div class="section-heading fade-up">
+          <span class="eyebrow">How it works</span>
+          <h2>Less founder Tinder. More thoughtful pairing.</h2>
+          <p class="section-copy">The app scores pairs across complementary roles, market overlap, working style, ambition, and operating constraints — then turns the top matches into intro-ready chat threads.</p>
         </div>
-        <div class="card-grid">
-          <article class="feature-card glass-card fade-up">
-            <h3>Complementary matching</h3>
-            <p>We score role balance, skill overlap, and missing strengths so you meet people who can expand what you can build.</p>
+        <div class="steps-grid">
+          <article class="step-card glass-card fade-up">
+            <span class="step-number">01</span>
+            <h3>Describe your edge</h3>
+            <p>Tell the app what you build well, where you want help, how fast you move, and what kind of market you want to attack.</p>
           </article>
-          <article class="feature-card glass-card fade-up">
-            <h3>Startup-specific signals</h3>
-            <p>Profiles capture startup intent, domain interests, and execution style instead of generic social profile noise.</p>
+          <article class="step-card glass-card fade-up">
+            <span class="step-number">02</span>
+            <h3>Rank real complements</h3>
+            <p>Matching rewards meaningful overlap without cloning you. Shared conviction matters, but mirrored blind spots get penalized.</p>
           </article>
-          <article class="feature-card glass-card fade-up">
-            <h3>Instant conversations</h3>
-            <p>Static demo chat shows how intros feel: direct, focused, and grounded in actual founder-building questions.</p>
+          <article class="step-card glass-card fade-up">
+            <span class="step-number">03</span>
+            <h3>Start with context</h3>
+            <p>Every intro includes a fit summary, mutual strengths, likely friction zones, and a realistic conversation starter.</p>
           </article>
         </div>
       </section>
 
-      <section class="section section-cta glass-card">
+      <section class="section section-tight">
+        <div class="section-heading fade-up">
+          <span class="eyebrow">Why this version feels better</span>
+          <h2>Sharper product storytelling, smoother UX, stronger demo realism.</h2>
+        </div>
+        <div class="card-grid">
+          <article class="feature-card glass-card fade-up">
+            <h3>Smarter scoring</h3>
+            <p>Profile matching now considers skill complement, shared markets, role balance, founder energy, timezone fit, and stage compatibility.</p>
+          </article>
+          <article class="feature-card glass-card fade-up">
+            <h3>Richer founder profiles</h3>
+            <p>Demo profiles feel like actual ambitious people — with avatars, constraints, work styles, goals, and operating preferences.</p>
+          </article>
+          <article class="feature-card glass-card fade-up">
+            <h3>Static, but polished</h3>
+            <p>No backend, no build step, no framework. Just solid HTML, CSS, and JavaScript with better motion, layout, and responsiveness.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="cta-panel glass-card fade-up">
         <div>
-          <span class="eyebrow">Ready to find your person?</span>
-          <h2>Build your founder profile in under two minutes.</h2>
-          <p>Save locally, see ranked matches instantly, and explore mock founder conversations without any backend.</p>
+          <span class="eyebrow">Ready to test the improved flow?</span>
+          <h2>Create a profile, inspect ranked matches, then open a demo chat.</h2>
         </div>
         <a class="button" href="create-profile.html">Start matching</a>
       </section>

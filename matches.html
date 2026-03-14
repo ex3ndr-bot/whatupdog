@@ -9,10 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-page="matches">
   <div class="site-shell">
-    <header class="topbar">
-      <a class="brand" href="index.html">What Up Dog</a>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <header class="topbar glass-card page-enter">
+      <a class="brand" href="index.html"><span class="brand-mark">🐶</span><span>What Up Dog</span></a>
       <nav class="nav">
         <a href="create-profile.html">Create Profile</a>
         <a class="is-active" href="matches.html">Matches</a>
@@ -20,16 +22,43 @@
       </nav>
     </header>
 
-    <main>
+    <main class="page-enter">
       <section class="page-header fade-up">
         <span class="eyebrow">Ranked founder feed</span>
         <h1 data-match-heading>Top founder matches</h1>
-        <p>Local scoring combines role complement, shared startup interests, and skill coverage.</p>
+        <p>Local scoring now blends role complement, market alignment, operating style, time commitment, stage fit, and practical collaboration signals.</p>
       </section>
 
       <section class="matches-layout">
         <aside class="sidebar">
           <div class="glass-card sidebar-card" data-profile-summary></div>
+          <div class="glass-card sidebar-card filters-card">
+            <span class="eyebrow">Filter & sort</span>
+            <div class="filter-stack">
+              <label class="field compact-field">
+                <span>Sort by</span>
+                <select data-sort-select>
+                  <option value="best">Best match</option>
+                  <option value="market">Market overlap</option>
+                  <option value="speed">Execution speed</option>
+                  <option value="availability">Availability fit</option>
+                </select>
+              </label>
+              <label class="field compact-field">
+                <span>Role</span>
+                <select data-role-filter>
+                  <option value="all">All roles</option>
+                  <option value="technical">Technical</option>
+                  <option value="business">Business</option>
+                  <option value="hybrid">Hybrid</option>
+                </select>
+              </label>
+              <label class="checkbox-row">
+                <input type="checkbox" data-market-filter>
+                <span>Only shared-market matches</span>
+              </label>
+            </div>
+          </div>
           <div class="glass-card sidebar-card" data-match-detail>
             <span class="eyebrow">Match detail</span>
             <p class="muted">Click “Why this match” on any card to inspect the pairing logic.</p>

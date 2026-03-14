@@ -1,319 +1,334 @@
 (function () {
-  var STORAGE_KEY = "whatupdog.profile";
-  var CHAT_KEY = "whatupdog.chat";
-  var demoProfiles = window.WUD_DEMO_PROFILES || [];
+  var storageKey = "whatupdog.profile";
+  var chatKey = "whatupdog.chats";
+  var page = document.body.getAttribute("data-page") || "";
+  var data = window.WhatUpDogData || {};
+  var demoProfiles = data.demoProfiles || [];
+  var skillPool = data.skillPool || [];
+  var starterProfile = data.starterProfile || {};
 
-  var skillUniverse = [
-    "AI/ML",
-    "Engineering",
-    "Product",
-    "Design",
-    "Sales",
-    "Growth",
-    "Marketing",
-    "Fundraising",
-    "Operations",
-    "Data",
-    "Finance",
-    "Community",
-    "Partnerships"
-  ];
-
-  function normalizeArray(value) {
-    if (!value) return [];
-    if (Array.isArray(value)) return value;
-    return String(value)
+  function normalizeList(value) {
+    return (value || "")
       .split(",")
-      .map(function (item) {
-        return item.trim();
-      })
+      .map(function (item) { return item.trim(); })
       .filter(Boolean);
   }
 
-  function getProfile() {
+  function getStoredProfile() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || null;
+      var saved = window.localStorage.getItem(storageKey);
+      if (!saved) return null;
+      return JSON.parse(saved);
     } catch (error) {
       return null;
     }
   }
 
   function saveProfile(profile) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    window.localStorage.setItem(storageKey, JSON.stringify(profile));
+  }
+
+  function getActiveProfile() {
+    return getStoredProfile() || starterProfile;
   }
 
   function getChatStore() {
     try {
-      return JSON.parse(localStorage.getItem(CHAT_KEY)) || {};
+      return JSON.parse(window.localStorage.getItem(chatKey) || "{}");
     } catch (error) {
       return {};
     }
   }
 
   function saveChatStore(store) {
-    localStorage.setItem(CHAT_KEY, JSON.stringify(store));
+    window.localStorage.setItem(chatKey, JSON.stringify(store));
   }
 
-  function parseInterests(input) {
-    return normalizeArray(input);
+  function titleCase(value) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
-  function complementaryRoleScore(userRole, targetRole) {
-    if (!userRole || !targetRole) return 6;
-    if (userRole === "hybrid" || targetRole === "hybrid") return 12;
-    if (userRole !== targetRole) return 18;
-    return 8;
-  }
-
-  function overlapCount(left, right) {
-    var rightSet = new Set(normalizeArray(right));
-    return normalizeArray(left).filter(function (item) {
-      return rightSet.has(item);
-    }).length;
-  }
-
-  function missingStrengthCount(userSkills, targetSkills) {
-    var userSet = new Set(normalizeArray(userSkills));
-    return normalizeArray(targetSkills).filter(function (skill) {
-      return !userSet.has(skill);
-    }).length;
-  }
-
-  function calculateMatchScore(userProfile, candidate) {
-    var hasUser = !!userProfile;
-    var sharedSkills = hasUser ? overlapCount(userProfile.skills, candidate.skills) : 1;
-    var sharedInterests = hasUser ? overlapCount(userProfile.interests, candidate.interests) : 1;
-    var complementarySkills = hasUser ? missingStrengthCount(userProfile.skills, candidate.skills) : 2;
-    var roleScore = hasUser ? complementaryRoleScore(userProfile.role, candidate.role) : 10;
-
-    var score = 32 + sharedSkills * 9 + sharedInterests * 10 + complementarySkills * 2 + roleScore;
-    return Math.max(62, Math.min(98, score));
-  }
-
-  function explainMatch(userProfile, candidate) {
-    if (!userProfile) {
-      return "Strong all-around founder fit with complementary execution potential.";
-    }
-
-    var sharedSkills = normalizeArray(userProfile.skills).filter(function (skill) {
-      return normalizeArray(candidate.skills).indexOf(skill) !== -1;
+  function intersection(a, b) {
+    return a.filter(function (item) {
+      return b.indexOf(item) !== -1;
     });
-    var sharedInterests = normalizeArray(userProfile.interests).filter(function (interest) {
-      return normalizeArray(candidate.interests).indexOf(interest) !== -1;
-    });
-
-    if (sharedInterests.length && userProfile.role !== candidate.role) {
-      return "Shared interest in " + sharedInterests[0] + " with complementary " + candidate.role + " strength.";
-    }
-    if (sharedSkills.length) {
-      return "Aligned on " + sharedSkills[0] + " and likely to move quickly on an MVP.";
-    }
-    if (userProfile.role !== candidate.role) {
-      return "Balanced founder pairing with clear technical and business coverage.";
-    }
-    return "High execution fit based on operator overlap and startup focus.";
   }
 
-  function getSortedMatches() {
-    var userProfile = getProfile();
-    return demoProfiles
-      .map(function (candidate) {
-        return {
-          profile: candidate,
-          score: calculateMatchScore(userProfile, candidate),
-          reason: explainMatch(userProfile, candidate)
-        };
-      })
-      .sort(function (left, right) {
-        return right.score - left.score;
-      });
+  function uniqueCount(a, b) {
+    var map = {};
+    a.concat(b).forEach(function (item) {
+      map[item] = true;
+    });
+    return Object.keys(map).length;
+  }
+
+  function availabilityScore(me, them) {
+    var weights = {
+      "nights": 0.55,
+      "part-time": 0.78,
+      "full-time": 1
+    };
+    return Math.round(((weights[me.availability] || 0.8) + (weights[them.availability] || 0.8)) / 2 * 100);
+  }
+
+  function timezoneScore(me, them) {
+    if (me.timezone === them.timezone) return 100;
+    var sameContinent = (me.timezone.indexOf("Time") !== -1 && them.timezone.indexOf("Time") !== -1);
+    return sameContinent ? 78 : 62;
+  }
+
+  function roleComplementScore(me, them) {
+    if (me.role !== them.role && me.role !== "hybrid" && them.role !== "hybrid") return 100;
+    if (me.role === them.role && me.role !== "hybrid") return 52;
+    return 82;
+  }
+
+  function stageScore(me, them) {
+    var order = { idea: 1, mvp: 2, traction: 3, growth: 4 };
+    var diff = Math.abs((order[me.stage] || 2) - (order[them.stage] || 2));
+    if (diff === 0) return 100;
+    if (diff === 1) return 84;
+    if (diff === 2) return 65;
+    return 48;
+  }
+
+  function skillComplementScore(me, them) {
+    var shared = intersection(me.skills, them.skills).length;
+    var total = uniqueCount(me.skills, them.skills) || 1;
+    var overlapRatio = shared / total;
+    var complementaryBonus = roleComplementScore(me, them) > 90 ? 18 : 8;
+    return Math.max(45, Math.min(100, Math.round((1 - overlapRatio) * 62 + shared * 8 + complementaryBonus)));
+  }
+
+  function marketScore(me, them) {
+    var shared = intersection(me.interests, them.interests);
+    if (!shared.length) return 38;
+    return Math.min(100, 58 + shared.length * 16);
+  }
+
+  function personalityScore(me, them) {
+    var shared = intersection(me.personality, them.personality).length;
+    return Math.min(100, 56 + shared * 11 + (shared ? 9 : 0));
+  }
+
+  function computeMatch(profile, candidate) {
+    var scores = {
+      role: roleComplementScore(profile, candidate),
+      skills: skillComplementScore(profile, candidate),
+      market: marketScore(profile, candidate),
+      personality: personalityScore(profile, candidate),
+      stage: stageScore(profile, candidate),
+      availability: availabilityScore(profile, candidate),
+      timezone: timezoneScore(profile, candidate)
+    };
+
+    var weighted = Math.round(
+      scores.role * 0.2 +
+      scores.skills * 0.18 +
+      scores.market * 0.2 +
+      scores.personality * 0.14 +
+      scores.stage * 0.1 +
+      scores.availability * 0.09 +
+      scores.timezone * 0.09
+    );
+
+    var sharedMarkets = intersection(profile.interests, candidate.interests);
+    var sharedTraits = intersection(profile.personality, candidate.personality);
+    var summary = [];
+
+    if (scores.role > 90) summary.push("clear role complement");
+    if (sharedMarkets.length) summary.push("shared focus in " + sharedMarkets.slice(0, 2).join(" + "));
+    if (scores.skills > 80) summary.push("strong skill coverage");
+    if (sharedTraits.length) summary.push("aligned operating style");
+    if (scores.availability > 85) summary.push("similar commitment level");
+
+    return {
+      candidate: candidate,
+      score: weighted,
+      sharedMarkets: sharedMarkets,
+      sharedTraits: sharedTraits,
+      breakdown: scores,
+      summary: summary.slice(0, 4)
+    };
+  }
+
+  function buildSkillGrid(form, existingSkills) {
+    var grid = form.querySelector("[data-skill-grid]");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    skillPool.forEach(function (skill) {
+      var label = document.createElement("label");
+      label.className = "chip-option";
+      label.innerHTML = '<input type="checkbox" name="skills" value="' + skill + '"><span>' + skill + '</span>';
+      var input = label.querySelector("input");
+      if ((existingSkills || []).indexOf(skill) !== -1) {
+        input.checked = true;
+      }
+      grid.appendChild(label);
+    });
+  }
+
+  function populateForm(form, profile) {
+    if (!form || !profile) return;
+    ["name", "title", "location", "avatar", "timezone", "bio"].forEach(function (field) {
+      if (form.elements[field] && profile[field]) form.elements[field].value = profile[field];
+    });
+    if (form.elements.interests) form.elements.interests.value = (profile.interests || []).join(", ");
+    if (form.elements.personality) form.elements.personality.value = (profile.personality || []).join(", ");
+    if (form.elements.stage && profile.stage) form.elements.stage.value = profile.stage;
+    if (form.elements.availability && profile.availability) form.elements.availability.value = profile.availability;
+    if (form.elements.role && profile.role) {
+      var radio = form.querySelector('input[name="role"][value="' + profile.role + '"]');
+      if (radio) radio.checked = true;
+    }
   }
 
   function bindProfileForm() {
     var form = document.querySelector("[data-profile-form]");
     if (!form) return;
 
-    var existing = getProfile();
-    var skillGrid = form.querySelector("[data-skill-grid]");
-
-    skillUniverse.forEach(function (skill) {
-      var label = document.createElement("label");
-      label.className = "chip-option";
-      label.innerHTML =
-        '<input type="checkbox" name="skills" value="' +
-        skill +
-        '"><span>' +
-        skill +
-        "</span>";
-      skillGrid.appendChild(label);
-    });
-
-    if (existing) {
-      form.elements.name.value = existing.name || "";
-      form.elements.interests.value = normalizeArray(existing.interests).join(", ");
-      form.elements.bio.value = existing.bio || "";
-
-      Array.prototype.forEach.call(form.elements.role, function (radio) {
-        radio.checked = radio.value === existing.role;
-      });
-
-      Array.prototype.forEach.call(form.querySelectorAll('input[name="skills"]'), function (checkbox) {
-        checkbox.checked = normalizeArray(existing.skills).indexOf(checkbox.value) !== -1;
-      });
-    }
+    var current = getActiveProfile();
+    buildSkillGrid(form, current.skills || starterProfile.skills);
+    populateForm(form, current);
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
-
-      var selectedSkills = Array.prototype.map
-        .call(form.querySelectorAll('input[name="skills"]:checked'), function (input) {
-          return input.value;
-        });
-
-      var selectedRole = form.querySelector('input[name="role"]:checked');
+      var selectedSkills = Array.prototype.slice.call(form.querySelectorAll('input[name="skills"]:checked')).map(function (input) {
+        return input.value;
+      });
       var profile = {
+        id: "you",
         name: form.elements.name.value.trim(),
-        skills: selectedSkills,
-        interests: parseInterests(form.elements.interests.value),
-        role: selectedRole ? selectedRole.value : "",
+        title: form.elements.title.value.trim(),
+        location: form.elements.location.value.trim(),
+        avatar: form.elements.avatar.value.trim() || "🐾",
+        timezone: form.elements.timezone.value.trim(),
+        role: form.querySelector('input[name="role"]:checked').value,
+        stage: form.elements.stage.value,
+        availability: form.elements.availability.value,
+        interests: normalizeList(form.elements.interests.value),
+        personality: normalizeList(form.elements.personality.value),
+        skills: selectedSkills.length ? selectedSkills : starterProfile.skills,
+        lookingFor: ["complementary founder", "high ownership", "honest communication"],
         bio: form.elements.bio.value.trim()
       };
-
       saveProfile(profile);
-
-      var status = form.querySelector("[data-form-status]");
-      status.textContent = "Profile saved locally. Your match feed is ready.";
-      status.classList.add("is-visible");
-
+      var status = document.querySelector("[data-form-status]");
+      if (status) status.textContent = "Profile saved locally. Your matches now re-rank using this profile.";
       window.setTimeout(function () {
         window.location.href = "matches.html";
-      }, 900);
+      }, 650);
     });
   }
 
-  function renderProfileSummary() {
-    var summary = document.querySelector("[data-profile-summary]");
-    if (!summary) return;
+  function renderProfileSummary(profile) {
+    var el = document.querySelector("[data-profile-summary]");
+    if (!el) return;
+    el.innerHTML =
+      '<span class="eyebrow">Your profile</span>' +
+      '<div class="profile-mini">' +
+      '<div class="avatar avatar-lg">' + profile.avatar + '</div>' +
+      '<div><h3>' + profile.name + '</h3><p>' + profile.title + '</p></div>' +
+      '</div>' +
+      '<div class="summary-stack">' +
+      '<div><span class="eyebrow">Role</span><p>' + titleCase(profile.role) + ' • ' + titleCase(profile.stage) + '</p></div>' +
+      '<div><span class="eyebrow">Focus</span><p>' + profile.interests.join(', ') + '</p></div>' +
+      '<div><span class="eyebrow">Working style</span><p>' + profile.personality.join(', ') + '</p></div>' +
+      '</div>';
+  }
 
-    var profile = getProfile();
-    if (!profile) {
-      summary.innerHTML =
-        '<div class="empty-state"><p>No local profile yet.</p><a class="button button-secondary" href="create-profile.html">Create profile</a></div>';
-      return;
-    }
+  function renderMatchDetail(match) {
+    var panel = document.querySelector("[data-match-detail]");
+    if (!panel || !match) return;
+    panel.innerHTML =
+      '<span class="eyebrow">Why this match</span>' +
+      '<h3>' + match.candidate.name + '</h3>' +
+      '<p class="muted">' + match.summary.join(' • ') + '</p>' +
+      '<div class="breakdown-grid">' +
+      '<div><span>Role balance</span><strong>' + match.breakdown.role + '%</strong></div>' +
+      '<div><span>Skill coverage</span><strong>' + match.breakdown.skills + '%</strong></div>' +
+      '<div><span>Market overlap</span><strong>' + match.breakdown.market + '%</strong></div>' +
+      '<div><span>Operating style</span><strong>' + match.breakdown.personality + '%</strong></div>' +
+      '<div><span>Stage fit</span><strong>' + match.breakdown.stage + '%</strong></div>' +
+      '<div><span>Availability</span><strong>' + match.breakdown.availability + '%</strong></div>' +
+      '</div>';
+  }
 
-    summary.innerHTML =
-      '<div class="profile-pill">' +
-      "<strong>" +
-      profile.name +
-      "</strong>" +
-      "<span>" +
-      (profile.role || "Founder") +
-      "</span>" +
-      "</div>" +
-      '<p class="muted">' +
-      normalizeArray(profile.skills).slice(0, 4).join(" • ") +
-      "</p>";
+  function matchCard(match) {
+    var c = match.candidate;
+    return '' +
+      '<article class="glass-card match-card fade-up">' +
+        '<div class="match-card-top">' +
+          '<div class="profile-mini">' +
+            '<div class="avatar avatar-lg">' + c.avatar + '</div>' +
+            '<div>' +
+              '<h3>' + c.name + '</h3>' +
+              '<p>' + c.title + '</p>' +
+              '<span class="meta-line">' + c.location + ' • ' + titleCase(c.role) + ' • ' + titleCase(c.availability) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="score-pill">' + match.score + '%</div>' +
+        '</div>' +
+        '<p class="match-bio">' + c.bio + '</p>' +
+        '<div class="tag-row">' + c.interests.map(function (item) { return '<span class="tag">' + item + '</span>'; }).join('') + '</div>' +
+        '<div class="summary-list">' + match.summary.map(function (item) { return '<span>' + item + '</span>'; }).join('') + '</div>' +
+        '<div class="match-actions">' +
+          '<button class="button button-secondary" type="button" data-detail-id="' + c.id + '">Why this match</button>' +
+          '<a class="button" href="chat.html?id=' + c.id + '">Open chat</a>' +
+        '</div>' +
+      '</article>';
   }
 
   function bindMatchesPage() {
-    var container = document.querySelector("[data-matches-list]");
-    if (!container) return;
+    var list = document.querySelector("[data-matches-list]");
+    if (!list) return;
 
-    var profile = getProfile();
-    var matches = getSortedMatches();
-    renderProfileSummary();
+    var profile = getActiveProfile();
+    renderProfileSummary(profile);
 
-    var heading = document.querySelector("[data-match-heading]");
-    if (heading) {
-      heading.textContent = profile && profile.name ? profile.name + "'s top founder matches" : "Top founder matches";
+    var sortSelect = document.querySelector("[data-sort-select]");
+    var roleFilter = document.querySelector("[data-role-filter]");
+    var marketFilter = document.querySelector("[data-market-filter]");
+
+    var matches = demoProfiles.map(function (candidate) {
+      return computeMatch(profile, candidate);
+    });
+
+    function getSortValue(match) {
+      var mode = sortSelect ? sortSelect.value : "best";
+      if (mode === "market") return match.breakdown.market;
+      if (mode === "speed") return match.breakdown.personality + match.breakdown.stage;
+      if (mode === "availability") return match.breakdown.availability + match.breakdown.timezone;
+      return match.score;
     }
 
-    container.innerHTML = "";
-
-    matches.forEach(function (match, index) {
-      var candidate = match.profile;
-      var card = document.createElement("article");
-      card.className = "match-card glass-card fade-up";
-      card.style.animationDelay = index * 70 + "ms";
-      card.innerHTML =
-        '<div class="match-score">' +
-        "<span>" +
-        match.score +
-        "%</span><small>match</small></div>" +
-        '<div class="match-body">' +
-        "<div>" +
-        '<h3 class="card-title">' +
-        candidate.name +
-        "</h3>" +
-        '<p class="card-subtitle">' +
-        candidate.title +
-        " • " +
-        candidate.location +
-        "</p>" +
-        "</div>" +
-        '<p class="card-copy">' +
-        candidate.bio +
-        "</p>" +
-        '<div class="tag-row">' +
-        normalizeArray(candidate.skills)
-          .slice(0, 4)
-          .map(function (skill) {
-            return '<span class="tag">' + skill + "</span>";
-          })
-          .join("") +
-        "</div>" +
-        '<p class="match-reason">' +
-        match.reason +
-        "</p>" +
-        '<div class="card-actions">' +
-        '<a class="button" href="chat.html?id=' +
-        candidate.id +
-        '">Connect</a>' +
-        '<button class="button button-secondary" type="button" data-view-profile="' +
-        candidate.id +
-        '">Why this match</button>' +
-        "</div>" +
-        "</div>";
-      container.appendChild(card);
-    });
-
-    container.addEventListener("click", function (event) {
-      var trigger = event.target.closest("[data-view-profile]");
-      if (!trigger) return;
-
-      var candidateId = trigger.getAttribute("data-view-profile");
-      var candidate = demoProfiles.find(function (item) {
-        return item.id === candidateId;
+    function render() {
+      var filtered = matches.filter(function (match) {
+        if (roleFilter && roleFilter.value !== "all" && match.candidate.role !== roleFilter.value) return false;
+        if (marketFilter && marketFilter.checked && !match.sharedMarkets.length) return false;
+        return true;
+      }).sort(function (a, b) {
+        return getSortValue(b) - getSortValue(a);
       });
-      var panel = document.querySelector("[data-match-detail]");
-      if (!candidate || !panel) return;
 
-      panel.innerHTML =
-        '<h3 class="card-title">' +
-        candidate.name +
-        "</h3>" +
-        '<p class="card-subtitle">' +
-        candidate.title +
-        " • " +
-        candidate.role +
-        "</p>" +
-        '<p class="card-copy">' +
-        candidate.bio +
-        "</p>" +
-        '<div class="detail-grid">' +
-        '<div><span class="eyebrow">Skills</span><p>' +
-        candidate.skills.join(", ") +
-        "</p></div>" +
-        '<div><span class="eyebrow">Interests</span><p>' +
-        candidate.interests.join(", ") +
-        "</p></div>" +
-        '<div><span class="eyebrow">Working style</span><p>' +
-        candidate.personality.join(", ") +
-        "</p></div>" +
-        "</div>";
-      panel.classList.add("is-visible");
+      list.innerHTML = filtered.map(matchCard).join("");
+      renderMatchDetail(filtered[0] || matches[0]);
+
+      Array.prototype.slice.call(document.querySelectorAll("[data-detail-id]")).forEach(function (button) {
+        button.addEventListener("click", function () {
+          var id = button.getAttribute("data-detail-id");
+          var match = filtered.find(function (item) { return item.candidate.id === id; });
+          renderMatchDetail(match);
+        });
+      });
+    }
+
+    [sortSelect, roleFilter, marketFilter].forEach(function (control) {
+      if (control) control.addEventListener("change", render);
     });
+
+    render();
   }
 
   function getCandidateById(id) {
@@ -322,18 +337,28 @@
     });
   }
 
+  function starterThread(candidate) {
+    return [
+      { author: "them", text: candidate.prompts.intro },
+      { author: "them", text: "I think the interesting question is whether our strengths connect into one believable wedge, not just a cool concept." }
+    ];
+  }
+
   function buildMockReply(candidate, message) {
     var lower = message.toLowerCase();
-    if (lower.indexOf("idea") !== -1 || lower.indexOf("build") !== -1) {
-      return "I like exploring wedges where we can validate quickly. I'd start with customer calls and a narrow MVP in " + candidate.interests[0] + ".";
+    if (lower.indexOf("market") !== -1 || lower.indexOf("customer") !== -1) {
+      return candidate.prompts.focus + " I would probably start with 8-10 customer calls before expanding scope.";
     }
-    if (lower.indexOf("team") !== -1 || lower.indexOf("cofounder") !== -1) {
-      return "I work best with someone who communicates directly, ships consistently, and owns their domain without drama.";
+    if (lower.indexOf("speed") !== -1 || lower.indexOf("ship") !== -1 || lower.indexOf("mvp") !== -1) {
+      return candidate.prompts.speed + " If we work together, I would want a very explicit 2-week plan and fast feedback loops.";
     }
-    if (lower.indexOf("fund") !== -1 || lower.indexOf("raise") !== -1) {
-      return "I think traction before fundraising, but I know the investor narrative we would need once we see signal.";
+    if (lower.indexOf("fund") !== -1 || lower.indexOf("raise") !== -1 || lower.indexOf("investor") !== -1) {
+      return "I am not allergic to fundraising, but I prefer earning the story through traction first. If the signal is there, I know how to shape the narrative.";
     }
-    return "That lines up. My edge is in " + candidate.skills.slice(0, 2).join(" and ") + ", and I care a lot about speed, trust, and tight feedback loops.";
+    if (lower.indexOf("cofounder") !== -1 || lower.indexOf("work") !== -1 || lower.indexOf("style") !== -1) {
+      return "I care a lot about reliability, direct communication, and clear ownership. If something is yours, I want to feel that it is truly yours.";
+    }
+    return "That resonates. My edge is in " + candidate.skills.slice(0, 2).join(" and ") + ", and I usually get excited when a founder pairing can combine speed with a real customer truth.";
   }
 
   function bindChatPage() {
@@ -344,24 +369,20 @@
     var id = params.get("id") || demoProfiles[0].id;
     var candidate = getCandidateById(id) || demoProfiles[0];
     var store = getChatStore();
-    var thread = store[candidate.id] || [
-      {
-        author: "them",
-        text: "Hey, I checked your What Up Dog profile. I think we could be a strong founder pairing."
-      },
-      {
-        author: "them",
-        text: "What kind of company do you want to build over the next 12 months?"
-      }
-    ];
+    var thread = store[candidate.id] || starterThread(candidate);
 
     var title = document.querySelector("[data-chat-title]");
     var subtitle = document.querySelector("[data-chat-subtitle]");
+    var avatar = document.querySelector("[data-chat-avatar]");
     var transcript = document.querySelector("[data-chat-messages]");
     var form = document.querySelector("[data-chat-form]");
+    var typing = document.querySelector("[data-typing-indicator]");
+    var typingLabel = document.querySelector("[data-typing-label]");
 
     title.textContent = candidate.name;
     subtitle.textContent = candidate.title + " • " + candidate.location;
+    if (avatar) avatar.textContent = candidate.avatar;
+    if (typingLabel) typingLabel.textContent = candidate.name + " is typing…";
 
     function renderThread() {
       transcript.innerHTML = "";
@@ -384,38 +405,55 @@
       if (!text) return;
 
       thread.push({ author: "me", text: text });
+      store[candidate.id] = thread;
+      saveChatStore(store);
       renderThread();
       input.value = "";
 
+      if (typing) typing.classList.remove("hidden");
+      var delay = 900 + Math.min(900, text.length * 14);
+
       window.setTimeout(function () {
+        if (typing) typing.classList.add("hidden");
         thread.push({ author: "them", text: buildMockReply(candidate, text) });
         store[candidate.id] = thread;
         saveChatStore(store);
         renderThread();
-      }, 500);
-
-      store[candidate.id] = thread;
-      saveChatStore(store);
+      }, delay);
     });
   }
 
   function bindHomeStats() {
     var count = document.querySelector("[data-profile-count]");
     if (!count) return;
-
-    var target = 1287;
+    var target = 1842;
     var current = 0;
     var interval = window.setInterval(function () {
-      current += 39;
+      current += 57;
       if (current >= target) {
         current = target;
         window.clearInterval(interval);
       }
       count.textContent = current.toLocaleString();
-    }, 28);
+    }, 24);
+  }
+
+  function bindPageTransitions() {
+    Array.prototype.slice.call(document.querySelectorAll("a[href$='.html'], a[href*='.html?']")).forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        var href = link.getAttribute("href");
+        if (!href || link.target === "_blank" || event.metaKey || event.ctrlKey) return;
+        event.preventDefault();
+        document.body.classList.add("is-leaving");
+        window.setTimeout(function () {
+          window.location.href = href;
+        }, 180);
+      });
+    });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    bindPageTransitions();
     bindProfileForm();
     bindMatchesPage();
     bindChatPage();
