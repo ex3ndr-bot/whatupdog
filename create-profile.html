@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Profile | What Up Dog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html">What Up Dog</a>
+      <nav class="nav">
+        <a class="is-active" href="create-profile.html">Create Profile</a>
+        <a href="matches.html">Matches</a>
+        <a href="chat.html">Chat</a>
+      </nav>
+    </header>
+
+    <main class="page-narrow">
+      <section class="page-header fade-up">
+        <span class="eyebrow">Founder intake</span>
+        <h1>Create your local founder profile</h1>
+        <p>Everything stays in `localStorage`. No account, no backend, no tracking.</p>
+      </section>
+
+      <form class="glass-card form-panel fade-up" data-profile-form>
+        <div class="form-row">
+          <label class="field">
+            <span>Name</span>
+            <input type="text" name="name" placeholder="Alex Morgan" required>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <span class="field-label">Core skills</span>
+          <div class="chip-grid" data-skill-grid></div>
+        </div>
+
+        <div class="form-row">
+          <label class="field">
+            <span>Interests</span>
+            <input type="text" name="interests" placeholder="AI Infrastructure, Fintech, Future of Work" required>
+            <small>Comma-separated startup spaces you want to build in.</small>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <span class="field-label">Primary role</span>
+          <div class="radio-grid">
+            <label class="radio-card">
+              <input type="radio" name="role" value="technical" checked>
+              <span>Technical</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="role" value="business">
+              <span>Business</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="role" value="hybrid">
+              <span>Hybrid</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="field">
+            <span>Bio</span>
+            <textarea name="bio" rows="5" placeholder="What have you built, what do you care about, and what kind of co-founder are you looking for?" required></textarea>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="button" type="submit">Save profile</button>
+          <a class="button button-secondary" href="matches.html">Skip to matches</a>
+        </div>
+
+        <p class="form-status" data-form-status aria-live="polite"></p>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

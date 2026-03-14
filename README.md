@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# What Up Dog
 
-## Getting Started
+Static GitHub Pages app for an AI-powered co-founder matching concept. No backend, no server, no build step.
 
-First, run the development server:
+## Files
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- `index.html`: landing page with hero, features, and CTA
+- `create-profile.html`: founder profile form saved to `localStorage`
+- `matches.html`: ranked demo matches using a client-side scoring algorithm
+- `chat.html`: mock chat UI for any selected match via `?id=...`
+- `style.css`: complete dark gradient theme, cards, forms, layout, animation, responsive rules
+- `js/data.js`: eight demo founder profiles
+- `js/app.js`: shared browser logic for profile storage, matching, and chat
+- `.nojekyll`: GitHub Pages compatibility marker
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open `index.html` directly in a browser, or publish the repository with GitHub Pages.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Notes
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Profile data is stored only in browser `localStorage`
+- Match scores are computed entirely on the client
+- Chat responses are mocked and persisted per match in `localStorage`

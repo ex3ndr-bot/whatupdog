@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matches | What Up Dog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html">What Up Dog</a>
+      <nav class="nav">
+        <a href="create-profile.html">Create Profile</a>
+        <a class="is-active" href="matches.html">Matches</a>
+        <a href="chat.html">Chat</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-header fade-up">
+        <span class="eyebrow">Ranked founder feed</span>
+        <h1 data-match-heading>Top founder matches</h1>
+        <p>Local scoring combines role complement, shared startup interests, and skill coverage.</p>
+      </section>
+
+      <section class="matches-layout">
+        <aside class="sidebar">
+          <div class="glass-card sidebar-card" data-profile-summary></div>
+          <div class="glass-card sidebar-card" data-match-detail>
+            <span class="eyebrow">Match detail</span>
+            <p class="muted">Click “Why this match” on any card to inspect the pairing logic.</p>
+          </div>
+        </aside>
+
+        <div class="matches-list" data-matches-list></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

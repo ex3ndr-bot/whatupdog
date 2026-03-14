@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat | What Up Dog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html">What Up Dog</a>
+      <nav class="nav">
+        <a href="create-profile.html">Create Profile</a>
+        <a href="matches.html">Matches</a>
+        <a class="is-active" href="chat.html">Chat</a>
+      </nav>
+    </header>
+
+    <main class="page-narrow">
+      <section class="page-header fade-up">
+        <span class="eyebrow">Founder intro chat</span>
+        <h1>Mock conversation</h1>
+        <p>Open from a match card or use `chat.html?id=maya-chen` style links.</p>
+      </section>
+
+      <section class="chat-shell glass-card fade-up" data-chat-shell>
+        <div class="chat-top">
+          <div>
+            <h2 data-chat-title>Founder Match</h2>
+            <p data-chat-subtitle>Loading conversation...</p>
+          </div>
+          <a class="button button-secondary" href="matches.html">Back to matches</a>
+        </div>
+
+        <div class="chat-messages" data-chat-messages></div>
+
+        <form class="chat-form" data-chat-form>
+          <input type="text" name="message" placeholder="Ask about thesis, pace, market, or how they like to work..." autocomplete="off" required>
+          <button class="button" type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
